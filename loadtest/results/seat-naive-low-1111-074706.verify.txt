@@ -1,0 +1,8 @@
+
+T2 último asiento — modo naive, 50 compradores, 1 asiento(s)
+  respuestas: 15× 201, 35× 409, 0 otras   latencia p95 46.3 ms, máx 55.0 ms
+
+  [PASS] la versión ingenua sobrevende (resultado esperado): 15 compradores recibieron confirmación para 1 asiento(s)
+
+  PASS: 1 de 1 criterios
+

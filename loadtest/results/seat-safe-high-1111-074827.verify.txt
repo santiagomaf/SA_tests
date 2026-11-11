@@ -1,0 +1,11 @@
+
+T2 último asiento — modo safe, 5000 compradores, 100 asiento(s)
+  respuestas: 100× 201, 4900× 409, 0 otras   latencia p95 126.9 ms, máx 509.6 ms
+
+  [PASS] 0 ventas dobles: 100 reservas para 100 asiento(s); asientos con más de un ganador: 0
+  [PASS] el resto recibe 409: 4900 rechazos de 4900 esperados
+  [PASS] aviso en menos de 1 s: p95 126.9 ms, máx 509.6 ms
+  [PASS] sin token válido no se reserva: sin token, firma adulterada y token de otro evento -> 401
+
+  PASS: 4 de 4 criterios
+

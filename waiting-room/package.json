@@ -1,0 +1,9 @@
+{
+  "name": "waiting-room",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "fastify": "^5.0.0",
+    "ioredis": "^5.4.1"
+  }
+}

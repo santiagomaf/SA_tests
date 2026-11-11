@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sala de espera</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#16202b; --muted:#637083; --line:#dde2e8; --a:#2563eb; --b:#d9480f; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#10151b; --card:#19212a; --ink:#e7ecf2; --muted:#93a1b3; --line:#2a3542; --a:#6ea3ff; --b:#ff9a62; }
+  }
+  body { margin:0; padding:24px 16px; background:var(--bg); color:var(--ink); font:15px/1.4 system-ui, sans-serif; }
+  main { max-width:960px; margin:0 auto; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  p { margin:0 0 16px; color:var(--muted); }
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin-bottom:16px; }
+  .tile, .chart { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px 14px; }
+  .tile b { display:block; font-size:26px; font-variant-numeric:tabular-nums; }
+  .tile span, .chart h2 { color:var(--muted); font-size:13px; font-weight:500; margin:0 0 6px; }
+  .charts { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px; }
+  canvas { width:100%; height:180px; display:block; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Sala de espera — <span id="event">…</span> <span id="soldout" style="color:var(--b)"></span></h1>
+  <p>Vista en vivo, actualizada cada segundo. Agrega <code>?event=ID</code> para ver otro evento.</p>
+  <div class="tiles">
+    <div class="tile"><span>En la fila</span><b id="queue_len">–</b></div>
+    <div class="tile"><span>Ingresos totales</span><b id="joined">–</b></div>
+    <div class="tile"><span>Ingresos último segundo</span><b id="joins_last_s">–</b></div>
+    <div class="tile"><span>Admitidos totales</span><b id="admitted_total">–</b></div>
+    <div class="tile"><span>Admitidos últimos 60 s / tope</span><b id="adm60">–</b></div>
+    <div class="tile"><span>Entradas vendidas / stock</span><b id="sold">–</b></div>
+    <div class="tile"><span>Descartados al agotarse</span><b id="dropped">–</b></div>
+  </div>
+  <div class="charts">
+    <div class="chart"><h2>Ingresos por segundo</h2><canvas id="c1"></canvas></div>
+    <div class="chart"><h2>Admitidos en los últimos 60 s (línea: tope)</h2><canvas id="c2"></canvas></div>
+  </div>
+</main>
+<script>
+const event = new URLSearchParams(location.search).get('event');
+const fmt = (n) => Number(n).toLocaleString('es-CL');
+const joins = [], admits = [];
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+function draw(id, data, color, limit) {
+  const c = document.getElementById(id), dpr = devicePixelRatio || 1;
+  const w = c.clientWidth, h = c.clientHeight;
+  c.width = w * dpr; c.height = h * dpr;
+  const g = c.getContext('2d');
+  g.scale(dpr, dpr);
+  const max = Math.max(1, limit || 0, ...data) * 1.1;
+  const x = (i) => 4 + (i / Math.max(1, data.length - 1)) * (w - 8);
+  const y = (v) => h - 16 - (v / max) * (h - 28);
+  g.fillStyle = css('--muted'); g.font = '11px system-ui';
+  g.fillText(fmt(Math.round(max / 1.1)), 4, 11);
+  if (limit) {
+    g.strokeStyle = css('--muted'); g.setLineDash([4, 4]);
+    g.beginPath(); g.moveTo(4, y(limit)); g.lineTo(w - 4, y(limit)); g.stroke(); g.setLineDash([]);
+  }
+  g.strokeStyle = color; g.lineWidth = 2; g.beginPath();
+  data.forEach((v, i) => (i ? g.lineTo(x(i), y(v)) : g.moveTo(x(i), y(v))));
+  g.stroke();
+}
+
+async function refresh() {
+  try {
+    const m = await (await fetch('/metrics' + (event ? '?event=' + encodeURIComponent(event) : ''))).json();
+    if (m.event) {
+      document.getElementById('event').textContent = m.event;
+      for (const k of ['queue_len', 'joined', 'joins_last_s', 'admitted_total', 'dropped']) {
+        document.getElementById(k).textContent = fmt(m[k]);
+      }
+      document.getElementById('adm60').textContent = fmt(m.admitted_last_60s) + ' / ' + fmt(m.rate);
+      document.getElementById('sold').textContent = fmt(m.sold) + ' / ' + fmt(m.stock);
+      document.getElementById('soldout').textContent = m.sold_out ? '· AGOTADO, fila cerrada' : '';
+      joins.push(m.joins_last_s); admits.push(m.admitted_last_60s);
+      if (joins.length > 300) { joins.shift(); admits.shift(); }
+      draw('c1', joins, css('--a'));
+      draw('c2', admits, css('--b'), m.rate);
+    }
+  } catch (e) { /* se reintenta en el próximo ciclo */ }
+  setTimeout(refresh, 1000);
+}
+refresh();
+</script>
+</body>
+</html>

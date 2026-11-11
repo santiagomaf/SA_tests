@@ -1,0 +1,15 @@
+
+T1 pico en la fila — evento queue-low-1111-081512
+  ingresos únicos: 2135   pico: 72 ingresos/s   en los primeros 30 s: 70 %
+  admitidos: 2135   quedan en la fila: 0   tasa: 500/min
+  espera hasta ser admitido (muestra): mediana 51 s, máx 109 s
+
+  [PASS] p95 < 2 s: join 4.5 ms, status 4.2 ms
+  [PASS] 0 % de errores 5xx: 0.000 % de 4997 solicitudes
+  [PASS] tasa de admisión respetada: máximo 500 admitidos en 60 s (tope 500)
+  [PASS] orden de llegada (FIFO): 2135 admisiones en orden, sin adelantar a nadie de la fila
+  [PASS] nadie se pierde: 2135 ingresos = 0 en fila + 2135 admitidos
+  [PASS] reingreso conserva la posición: sonda: 1 -> 1; recargas en k6 que la conservaron: 100 %
+
+  PASS: 6 de 6 criterios
+

@@ -1,0 +1,15 @@
+
+T3 entradas agotadas — evento soldout-high-1111-101158, 200000 compradores, 25000 entradas
+  ingresos a la fila: 200000   admitidos: 25924   tasa: 60000/min
+  compraron (201): 25000   agotado al reservar (410): 85   agotado estando en la sala: 174915   agotado al ingresar: 0
+
+  [PASS] se vende exactamente el stock: 25000 confirmaciones, 25000 vendidas en el servidor, stock 25000
+  [PASS] al agotarse se descarta la fila: 174076 personas descartadas, quedan 0 en fila; ingreso tardío -> sold_out
+  [PASS] nadie se pierde: 200000 ingresos = 25924 admitidos + 174076 descartados
+  [PASS] todos reciben respuesta: 200000 de 200000 compradores terminaron con compra o aviso de agotado
+  [PASS] 0 % de errores 5xx: 0.000 % de 751400 solicitudes
+  [PASS] tasa de admisión respetada: máximo 25924 admitidos en 60 s (tope 60000)
+  [PASS] orden de llegada (FIFO): 25924 admisiones en orden, sin adelantar a nadie de la fila
+
+  PASS: 7 de 7 criterios
+
