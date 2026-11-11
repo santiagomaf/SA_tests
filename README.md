@@ -139,3 +139,4 @@ La sección 12.1 dice que 200.000 usuarios en 5 minutos "equivalen a unas 667 so
 El mismo supuesto aparece en la medida de EC-02 ("200.000 usuarios intentan ingresar durante los primeros 5 minutos"): conviene precisar ahí la forma de la llegada.
 
 El cálculo de las 6,7 horas de fila a 500 admisiones por minuto (ADR-02 y flujo S2) sigue siendo correcto y la prueba lo confirma: tras 5 minutos quedaban 196.831 personas esperando.
+# SA_tests
